@@ -1,6 +1,14 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 typedef struct {
-    int id;
-    char descricao  [100];
-    int estoque;
+    char codigo[20];
+    char descricao[100];
     float preco;
-} Produto;   
+    int estoque;
+} Produto;
+
+int carregarProdutos(Produto produtos[]);
+void salvarProdutos(Produto produtos[], int total);
+
