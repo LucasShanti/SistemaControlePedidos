@@ -1,5 +1,6 @@
 #ifndef cliente_h //se a variável cliente_h já foi definida, vai direto pro endif
 #define cliente_h
+#define MAX_CLIENTES 100
 
 typedef struct {
     char nome[100];
@@ -30,16 +31,21 @@ typedef struct {
         PessoaJuridica pj;
     } dados;
 
+    typedef struct {
+    Cliente clientes[MAX_CLIENTES];
+    int count;
+    } ListaClientes;
+
 } Cliente;
 
 int validarCPF(char* cpf); //função para validar CPF (cliente.c)
 int validarCNPJ(char* cnpj); //função para validar CNPJ (cliente.c)
 
-void cadastrarCliente();
-void consultarCliente();
-void removerCliente();
-void listarClientes();
-void analisarCliente(); //CRUD
+void cadastrarCliente(ListaClientes* lista);
+void consultarCliente(ListaClientes* lista);
+void removerCliente(ListaClientes* lista);
+void listarClientes(ListaClientes* lista);
+void analisarCliente(ListaClientes* lista); //CRUD
 
 
 #endif 
