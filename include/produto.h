@@ -11,4 +11,8 @@ typedef struct {
 
 int carregarProdutos(Produto produtos[]);
 void salvarProdutos(Produto produtos[], int total);
+int analisarProdutoCONSULTA(Produto produtos[], int total, const char* codigo);
+int analisarProdutoREMOCAO(Produto produtos[], int total, const char* codigo);
+void consultarProduto(Produto produtos[], int total);
+void removerProduto(Produto produtos[], int* total);
 
