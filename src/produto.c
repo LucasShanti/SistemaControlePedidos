@@ -215,4 +215,3 @@ void listarProduto(Produto produtos[], int total) {
     getch();
     endwin();
 }
-
