@@ -1,12 +1,5 @@
-typedef struct {
-    int id;
-    char nome  [100];
-    char endereco [100];
-    char telefone [20];
-    int tipo; // 0 - Pessoa Fisica, 1 - Pessoa Juridica
-    PessoaFisica pf;
-    PessoaJuridica pj;
-} Cliente;
+#ifndef CLIENTE_H
+#define CLIENTE_H
 
 typedef struct {
     char cpf[15];
@@ -19,3 +12,15 @@ typedef struct {
     char razaoSocial[50];
     char nome [20];
 } PessoaJuridica;
+
+typedef struct {
+    int id;
+    char nome  [100];
+    char endereco [100];
+    char telefone [20];
+    int tipo;
+    PessoaFisica pf;
+    PessoaJuridica pj;
+} Cliente;
+
+#endif

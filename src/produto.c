@@ -3,7 +3,9 @@
 #include <string.h>
 #include "../include/produto.h"
 #include "../include/pedido.h"
-#include <curses.h>
+#include "../include/curses.h"
+
+
 void cadastrarProduto(Produto produtos[], int* total) {
     char codigo[20];
     char descricao[100];
@@ -11,6 +13,7 @@ void cadastrarProduto(Produto produtos[], int* total) {
     int estoque;
     
     initscr();
+    clear();
     echo();
     
     
@@ -93,6 +96,9 @@ int analisarProdutoREMOCAO(Produto produtos[], int total, const char* codigo) {
 
 
 void consultarProduto(Produto produtos[], int total) {
+    initscr();
+    clear();
+    echo();
     char codigo[20];
     printw("Informe o código do produto: ");
     refresh();
@@ -101,6 +107,10 @@ void consultarProduto(Produto produtos[], int total) {
     int indice = analisarProdutoCONSULTA(produtos, total, codigo);
     if (indice == -1) {
         printw("Erro: Produto não existe.\n");
+        printw("Pressione qualquer tecla...");
+        refresh();
+        getch();
+        endwin();
         return;
     }
 
@@ -110,22 +120,36 @@ void consultarProduto(Produto produtos[], int total) {
     printw("Preço: %.2f\n", produtos[indice].preco);
     printw("Estoque: %d\n", produtos[indice].estoque);
     refresh();
+    printw("Pressione qualquer tecla...");
+    getch();
+    endwin();
 }
 
 
 void removerProduto(Produto produtos[], int* total) {
+    initscr();
+    clear();
+    echo();
     char codigo[20];
     char confirma[3];
     printw("Informe o código do produto: ");
-    scanf("%s", codigo);
+    scanw("%s", codigo);
 
     int resultado = analisarProdutoREMOCAO(produtos, *total, codigo);
     if (resultado == -1) {
         printw("Erro: Produto não existe.\n");
+        printw("Pressione qualquer tecla...");
+        refresh();
+        getch();
+        endwin();
         return;
     }
     if (resultado == -2) {
         printw("Erro: Produto não pode ser excluído (consta em pedidos).\n");
+        printw("Pressione qualquer tecla...");
+        refresh();
+        getch();
+        endwin();
         return;
     }
 
@@ -133,6 +157,10 @@ void removerProduto(Produto produtos[], int* total) {
     scanw("%s", confirma);
     if (strcmp(confirma, "sim") != 0) {
         printw("Exclusão cancelada.\n");
+        printw("Pressione qualquer tecla...");
+        refresh();
+        getch();
+        endwin();
         return;
     }
 
@@ -143,52 +171,50 @@ void removerProduto(Produto produtos[], int* total) {
     (*total)--;
     salvarProdutos(produtos, *total);
     printw("Produto removido com sucesso.\n");
+    printw("Pressione qualquer tecla...");
     refresh();
+    getch();
+    endwin();
 }
 
 int carregarProdutos(Produto produtos[]) {
     FILE *arquivo = fopen("data/Produtos.csv", "r");
+    if (!arquivo) return 0;
     int total = 0;
     char linha[300];
 
-
-fgets(linha, sizeof(linha), arquivo);
-
-while (fgets(linha, sizeof(linha), arquivo) != NULL && total < 100) {
-    linha[strcspn(linha, "\n")] = 0;
-    
-    // Separa os dados utilizando strtok(ele delimita os caracteres)
-    char *token = strtok(linha, ",");
-    if (token != NULL) strcpy(produtos[total].codigo, token);
-    
-    token = strtok(NULL, ",");
-    if (token != NULL) strcpy(produtos[total].descricao, token);
-    
-    token = strtok(NULL, ",");
-    if (token != NULL) produtos[total].preco = atof(token);
-    
-    token = strtok(NULL, ",");
-    if (token != NULL) produtos[total].estoque = atoi(token);
-    
-    total++;
-}
-
-fclose(arquivo);
-return total;
+    if (fgets(linha, sizeof(linha), arquivo) == NULL) {
+        fclose(arquivo);
+        return 0;
+    }
+    while (fgets(linha, sizeof(linha), arquivo) != NULL && total < 100) {
+        linha[strcspn(linha, "\n")] = 0;
+        char *token = strtok(linha, ",");
+        if (token != NULL) strcpy(produtos[total].codigo, token);
+        token = strtok(NULL, ",");
+        if (token != NULL) strcpy(produtos[total].descricao, token);
+        token = strtok(NULL, ",");
+        if (token != NULL) produtos[total].estoque = atoi(token);
+        token = strtok(NULL, ",");
+        if (token != NULL) produtos[total].preco = atof(token);
+        total++;
+    }
+    fclose(arquivo);
+    return total;
 }
 
 void salvarProdutos(Produto produtos[], int total) {
     FILE *arquivo = fopen("data/Produtos.csv", "w");
     
     
-    fprintf(arquivo, "codigo,descricao,preco,estoque\n");
+    fprintf(arquivo, "codigo,descricao,estoque,preco\n");
     
     for (int i = 0; i < total; i++) {
-        fprintf(arquivo, "%s,%s,%.2f,%d\n", 
+        fprintf(arquivo, "%s,%s,%d,%.2f\n", 
                 produtos[i].codigo, 
                 produtos[i].descricao, 
-                produtos[i].preco, 
-                produtos[i].estoque);
+                produtos[i].estoque,
+                produtos[i].preco);
     }
     
     fclose(arquivo);
@@ -197,6 +223,7 @@ void salvarProdutos(Produto produtos[], int total) {
 
 void listarProduto(Produto produtos[], int total) {
     initscr();
+    clear();
     
     if (total == 0) {
         printw("Nenhum produto cadastrado.\n");
