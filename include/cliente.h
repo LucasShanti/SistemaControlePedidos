@@ -31,12 +31,12 @@ typedef struct {
         PessoaJuridica pj;
     } dados;
 
+} Cliente;
+
     typedef struct {
     Cliente clientes[MAX_CLIENTES];
     int count;
     } ListaClientes;
-
-} Cliente;
 
 int validarCPF(char* cpf); //função para validar CPF (cliente.c)
 int validarCNPJ(char* cnpj); //função para validar CNPJ (cliente.c)
@@ -45,7 +45,7 @@ void cadastrarCliente(ListaClientes* lista);
 void consultarCliente(ListaClientes* lista);
 void removerCliente(ListaClientes* lista);
 void listarClientes(ListaClientes* lista);
-void analisarCliente(ListaClientes* lista); //CRUD
+int analisarCliente(ListaClientes* lista, int id, char* cpf, char* cnpj);  //CRUD
 
 
 #endif 
