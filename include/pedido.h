@@ -1,3 +1,6 @@
+#ifndef PEDIDO_H
+#define PEDIDO_H
+
 typedef struct {
     int id;
     int clienteid;
@@ -11,3 +14,11 @@ typedef struct {
     int quantidade;
     double subtotal;
 } ItemPedido;
+
+int carregarPedidos(Pedido pedidos[]);
+void salvarPedidos(Pedido pedidos[], int total);
+void inserirPedido();
+void listarPedidos();
+void detalharPedido();
+
+#endif

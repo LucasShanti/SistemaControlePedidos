@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "pedido.h": "c",
+        "curses.h": "c"
+    }
+}
