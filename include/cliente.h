@@ -2,15 +2,14 @@
 #define CLIENTE_H
 
 typedef struct {
+    char nome[100];
     char cpf[15];
-    char nome[50];
-    char dataNascimento[11];
+    char celular[20];
 } PessoaFisica;
-
 typedef struct {
-    char cnpj[20];
-    char razaoSocial[50];
-    char nome [20];
+    char razaoSocial[150];
+    char cnpj[19];
+    char nomeContato[100];
 } PessoaJuridica;
 
 typedef struct {
