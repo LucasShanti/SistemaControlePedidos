@@ -4,6 +4,9 @@
 #include "../include/produto.h"
 #include "../include/pedido.h"
 #include "../include/curses.h"
+#include "../include/interface.h"
+
+extern int totalProdutos;
 
 
 void cadastrarProduto(Produto produtos[], int* total) {
@@ -21,13 +24,14 @@ void cadastrarProduto(Produto produtos[], int* total) {
     refresh();
     getstr(codigo);
     
-    // Verifica se o código já existe
+    
     if (analisarProdutoCADASTRO(produtos, *total, codigo) != -1) {
         printw("\nERRO: Codigo ja existe!\n");
         printw("Pressione qualquer tecla...");
         refresh();
         getch();
         endwin();
+        mostrarMenuProdutos(produtos, total);
         return;
     }
     
@@ -59,6 +63,8 @@ void cadastrarProduto(Produto produtos[], int* total) {
     refresh();
     getch();
     endwin();
+    mostrarMenuProdutos(produtos, total);
+    return;
 }
 
 int analisarProdutoCADASTRO(Produto produtos[], int total, const char* codigo) {
@@ -67,12 +73,12 @@ int analisarProdutoCADASTRO(Produto produtos[], int total, const char* codigo) {
             return i;
         }
     }
-    return -1; // o codigo do produto nao existe
+    return -1;
 }
 
 
 int analisarProdutoCONSULTA(Produto produtos[], int total, const char* codigo) {
-    return analisarProdutoCADASTRO(produtos, total, codigo); // Verifica apenas existência
+    return analisarProdutoCADASTRO(produtos, total, codigo); 
 }
 
 
@@ -88,7 +94,7 @@ int analisarProdutoREMOCAO(Produto produtos[], int total, const char* codigo) {
 
     for (int i = 0; i < totalItens; i++) {
         if (itens[i].produtoid == atoi(produtos[indice].codigo)) {
-            return -2; // Produto está em pedidos
+            return -2; 
         }
     }
     return indice;
@@ -111,6 +117,7 @@ void consultarProduto(Produto produtos[], int total) {
         refresh();
         getch();
         endwin();
+        mostrarMenuProdutos(produtos, &totalProdutos);
         return;
     }
 
@@ -123,6 +130,8 @@ void consultarProduto(Produto produtos[], int total) {
     printw("Pressione qualquer tecla...");
     getch();
     endwin();
+    mostrarMenuProdutos(produtos, &totalProdutos);
+    return;
 }
 
 
@@ -142,6 +151,7 @@ void removerProduto(Produto produtos[], int* total) {
         refresh();
         getch();
         endwin();
+        mostrarMenuProdutos(produtos, total);
         return;
     }
     if (resultado == -2) {
@@ -150,6 +160,7 @@ void removerProduto(Produto produtos[], int* total) {
         refresh();
         getch();
         endwin();
+        mostrarMenuProdutos(produtos, total);
         return;
     }
 
@@ -161,10 +172,11 @@ void removerProduto(Produto produtos[], int* total) {
         refresh();
         getch();
         endwin();
+        mostrarMenuProdutos(produtos, total);
         return;
     }
 
-    // Remover produto do array
+    
     for (int i = resultado; i < *total - 1; i++) {
         produtos[i] = produtos[i + 1];
     }
@@ -175,6 +187,8 @@ void removerProduto(Produto produtos[], int* total) {
     refresh();
     getch();
     endwin();
+    mostrarMenuProdutos(produtos, total);
+    return;
 }
 
 int carregarProdutos(Produto produtos[]) {
@@ -241,4 +255,6 @@ void listarProduto(Produto produtos[], int total) {
     refresh();
     getch();
     endwin();
+    mostrarMenuProdutos(produtos, &totalProdutos);
+    return;
 }

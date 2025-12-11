@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <curses.h>
+#include "../include/curses.h"
 #include "../include/produto.h"
 #include "../include/pedido.h"
 #include "../include/interface.h"
@@ -16,8 +16,11 @@ int totalPedidos = 0;
 int main()
 {
     totalProdutos = carregarProdutos(produtos);
+    totalPedidos = carregarPedidos(pedidos);
     initscr();
     mostrarMenuPrincipal();
+    salvarProdutos(produtos, totalProdutos);
+    salvarPedidos(pedidos, totalPedidos);
     endwin();
     return 0;
 }

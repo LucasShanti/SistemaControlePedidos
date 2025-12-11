@@ -4,6 +4,7 @@
 #include "../include/curses.h"
 #include "../include/pedido.h"
 #include "../include/produto.h"
+#include "../include/interface.h"
 
 extern Produto produtos[100];
 extern int totalProdutos;
@@ -26,19 +27,23 @@ int carregarPedidos(Pedido arr[]) {
         fclose(arquivo);
         return 0;
     }
+    
     while (fgets(linha, sizeof(linha), arquivo) && total < 100) {
         linha[strcspn(linha, "\n")] = 0;
         char *token = strtok(linha, ",");
         if (!token) break;
         arr[total].id = atoi(token);
         token = strtok(NULL, ",");
+        
         if (!token) break;
         arr[total].clienteid = atoi(token);
         token = strtok(NULL, ",");
+        
         if (!token) break;
         strncpy(arr[total].data, token, sizeof(arr[total].data));
         arr[total].data[sizeof(arr[total].data) - 1] = '\0';
         token = strtok(NULL, ",");
+
         if (!token) break;
         arr[total].total = atof(token);
         total++;
@@ -57,9 +62,13 @@ void salvarPedidos(Pedido arr[], int total) {
     fclose(arquivo);
 }
 
-static int analisarCliente(int clienteid) {
-    if (clienteid > 0) return 1;
-    return -1;
+int analisarCliente(int clienteid) {
+    for (int i = 0; i < totalPedidos; i++) {
+        if (pedidos[i].clienteid == clienteid) {
+            return -1;
+        }
+    }
+    return 1;
 }
 
 void inserirPedido() {
@@ -78,23 +87,36 @@ void inserirPedido() {
         refresh();
         getch();
         endwin();
+        mostrarMenuPedidos();
         return;
     }
+
     int clienteid;
     printw("Codigo do Cliente: ");
     refresh();
     getnstr(buffer, sizeof(buffer) - 1);
     clienteid = atoi(buffer);
-    if (analisarCliente(clienteid) == -1) {
-        printw("\nERRO: Cliente nao existe\n");
+    if (clienteid <= 0) {
+        printw("\nERRO: Cliente invalido\n");
         printw("Pressione qualquer tecla...");
         refresh();
         getch();
         endwin();
+        mostrarMenuPedidos();
         return;
     }
+    if (analisarCliente(clienteid) == -1) {
+        printw("\nERRO: Cliente ja possui pedido\n");
+        printw("Pressione qualquer tecla...");
+        refresh();
+        getch();
+        endwin();
+        mostrarMenuPedidos();
+        return;
+    }
+
     char data[16];
-    printw("Data (YYYY-MM-DD): ");
+    printw("Data (DD-MM-YYYY): ");
     refresh();
     getnstr(data, sizeof(data) - 1);
     int qtdItens;
@@ -102,13 +124,28 @@ void inserirPedido() {
     refresh();
     getnstr(buffer, sizeof(buffer) - 1);
     qtdItens = atoi(buffer);
+    if (qtdItens <= 0 || qtdItens > 100) {
+        printw("\nERRO: Quantidade de itens invalida\n");
+        printw("Pressione qualquer tecla...");
+        refresh();
+        getch();
+        endwin();
+        mostrarMenuPedidos();
+        return;
+    }
+
     double total = 0.0;
+
     for (int i = 0; i < qtdItens; i++) {
         char codigo[32];
         int quant;
-        printw("Codigo do Produto #%d: ", i + 1);
+        printw("Codigo do Produto #%d (ou 'fim'): ", i + 1);
         refresh();
         getnstr(codigo, sizeof(codigo) - 1);
+        if (strlen(codigo) == 0 || strcmp(codigo, "fim") == 0) {
+            break;
+        }
+
         int idx = analisarProdutoCONSULTA(produtos, totalProdutos, codigo);
         if (idx == -1) {
             printw("\nERRO: Produto nao existe\n");
@@ -116,8 +153,10 @@ void inserirPedido() {
             refresh();
             getch();
             endwin();
+            mostrarMenuPedidos();
             return;
         }
+
         printw("Quantidade: ");
         refresh();
         getnstr(buffer, sizeof(buffer) - 1);
@@ -127,6 +166,7 @@ void inserirPedido() {
         produtos[idx].estoque -= quant;
         if (produtos[idx].estoque < 0) produtos[idx].estoque = 0;
     }
+
     salvarProdutos(produtos, totalProdutos);
     pedidos[totalPedidos].id = id;
     pedidos[totalPedidos].clienteid = clienteid;
@@ -140,6 +180,8 @@ void inserirPedido() {
     refresh();
     getch();
     endwin();
+    mostrarMenuPedidos();
+    return;
 }
 
 void listarPedidos() {
@@ -159,6 +201,8 @@ void listarPedidos() {
     refresh();
     getch();
     endwin();
+    mostrarMenuPedidos();
+    return;
 }
 
 void detalharPedido() {
@@ -177,6 +221,7 @@ void detalharPedido() {
         refresh();
         getch();
         endwin();
+        mostrarMenuPedidos();
         return;
     }
     printw("\nID: %d\n", pedidos[idx].id);
@@ -187,4 +232,6 @@ void detalharPedido() {
     refresh();
     getch();
     endwin();
+    mostrarMenuPedidos();
+    return;
 }
